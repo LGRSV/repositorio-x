@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Portal · Administração</title>
+<style>
+  :root{
+    --bg:#F4F7F9; --surface:#FFFFFF; --surface-soft:#F7FAFB;
+    --border:#E1E8EC; --border-strong:#CBD6DC;
+    --text:#16232B; --muted:#64757E;
+    --accent:#0F766E; --accent-hover:#0B5F58; --accent-soft:#E6F3F1;
+    --danger:#C0392B; --danger-soft:#FCEEED; --danger-border:#F2CFCB;
+    --ok:#0F766E; --radius:14px; --shadow:0 8px 30px rgba(16,35,43,.09);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    color:var(--text);
+    background:
+      radial-gradient(900px 460px at 90% -10%, #E4F1EF 0%, transparent 60%),
+      var(--bg);
+    min-height:100vh;padding:24px 16px 60px;-webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:640px;margin:0 auto}
+  .mark{display:flex;align-items:center;gap:10px;margin-bottom:22px}
+  .lock{width:34px;height:34px;border-radius:9px;flex:none;background:var(--accent-soft);display:grid;place-items:center}
+  .lock svg{width:17px;height:17px;stroke:var(--accent)}
+  .brand{font-size:12px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--accent)}
+  .brand span{color:var(--muted);font-weight:600}
+
+  .card{
+    background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+    box-shadow:var(--shadow);padding:24px 22px;margin-bottom:18px;
+  }
+  h2{font-size:16px;font-weight:650;margin-bottom:4px;letter-spacing:-.01em}
+  .card>.hint{font-size:12.5px;color:var(--muted);line-height:1.5;margin-bottom:18px}
+  label{display:block;font-size:12.5px;font-weight:600;margin:0 0 7px}
+  .field{margin-bottom:15px}
+  .row{display:flex;gap:10px}
+  .row>.field{flex:1;margin-bottom:0}
+  input,textarea{
+    width:100%;font-size:14.5px;font-family:inherit;color:var(--text);
+    padding:11px 12px;border:1.5px solid var(--border-strong);border-radius:10px;
+    background:var(--surface-soft);transition:border-color .15s,box-shadow .15s,background .15s;
+  }
+  textarea{resize:vertical;min-height:120px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12.5px;line-height:1.5}
+  input:focus,textarea:focus{outline:none;border-color:var(--accent);background:#fff;box-shadow:0 0 0 3px rgba(15,118,110,.14)}
+  .btn{
+    font-size:14.5px;font-weight:650;font-family:inherit;color:#fff;background:var(--accent);
+    border:none;border-radius:10px;padding:12px 16px;cursor:pointer;transition:background .15s,transform .05s;
+  }
+  .btn:hover{background:var(--accent-hover)} .btn:active{transform:translateY(1px)}
+  .btn:disabled{opacity:.65;cursor:default}
+  .btn.full{width:100%;margin-top:4px}
+  .btn.ghost{background:var(--surface-soft);color:var(--text);border:1.5px solid var(--border-strong)}
+  .btn.ghost:hover{background:#EEF3F5}
+  .btn.sm{font-size:12.5px;padding:8px 12px}
+  .btn.danger{background:transparent;color:var(--danger);border:1.5px solid var(--danger-border)}
+  .btn.danger:hover{background:var(--danger-soft)}
+
+  .filebar{display:flex;align-items:center;gap:10px;margin-top:8px}
+  .filebar .name{font-size:12px;color:var(--muted)}
+  .checkline{display:flex;align-items:center;gap:8px;margin-top:10px;font-size:12.5px;color:var(--muted)}
+  .checkline input{width:auto}
+
+  .msg{font-size:13px;line-height:1.5;margin-top:16px;padding:11px 13px;border-radius:9px;display:none;word-break:break-word}
+  .msg.err{display:block;background:var(--danger-soft);color:var(--danger);border:1px solid var(--danger-border)}
+  .msg.ok{display:block;background:var(--accent-soft);color:var(--accent-hover);border:1px solid #C7E6E1}
+  .msg.busy{display:block;background:var(--surface-soft);color:var(--muted);border:1px solid var(--border-strong)}
+
+  .cred{margin-top:14px;padding:13px 14px;background:var(--surface-soft);border:1px dashed var(--border-strong);border-radius:10px;font-size:13px;display:none}
+  .cred.show{display:block}
+  .cred b{font-weight:650}
+  .cred .k{font-family:ui-monospace,monospace;font-size:12.5px;color:var(--accent-hover);word-break:break-all}
+
+  .list{list-style:none}
+  .item{display:flex;align-items:center;gap:12px;padding:13px 0;border-top:1px solid var(--border)}
+  .item:first-child{border-top:none}
+  .item .info{flex:1;min-width:0}
+  .item .n{font-size:14px;font-weight:600}
+  .item .f{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .item .f a{color:var(--accent);text-decoration:none}
+  .item .f a:hover{text-decoration:underline}
+  .empty{font-size:13px;color:var(--muted);padding:14px 0;text-align:center}
+
+  .tokline{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted);margin-top:2px}
+  .dot{width:8px;height:8px;border-radius:50%;background:#CBD6DC;flex:none}
+  .dot.on{background:#2E9E7E}
+
+  /* Lock screen */
+  #lock{max-width:380px;margin:8vh auto 0}
+  #lock .hint{margin-bottom:20px}
+  .hidden{display:none!important}
+</style>
+</head>
+<body>
+
+<!-- ===== TELA DE TRAVA LOCAL ===== -->
+<div id="lock" class="card">
+  <div class="mark"><span class="lock"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10.5" width="16" height="10" rx="2"/><path d="M8 10.5V7a4 4 0 0 1 8 0v3.5"/></svg></span><span class="brand">Portal · <span>Admin</span></span></div>
+  <h2 id="lockTitle">Senha de administrador</h2>
+  <p class="hint" id="lockHint">Digite sua senha para abrir o painel.</p>
+  <div class="field">
+    <input id="lockPass" type="password" placeholder="Senha" autofocus>
+  </div>
+  <button class="btn full" id="lockBtn">Entrar</button>
+  <div id="lockMsg" class="msg"></div>
+  <div class="checkline" style="justify-content:center;margin-top:14px">
+    <a href="#" id="lockReset" style="color:var(--muted);font-size:11.5px">Esquecer trava deste navegador</a>
+  </div>
+</div>
+
+<!-- ===== PAINEL ===== -->
+<div id="app" class="wrap hidden">
+  <div class="mark"><span class="lock"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10.5" width="16" height="10" rx="2"/><path d="M8 10.5V7a4 4 0 0 1 8 0v3.5"/></svg></span><span class="brand">Portal · <span>Admin</span></span></div>
+
+  <!-- Token -->
+  <div class="card">
+    <h2>Token do GitHub</h2>
+    <p class="hint">Necessário para salvar. Fica só neste navegador — nunca é enviado para o site.</p>
+    <div class="field">
+      <input id="token" type="password" placeholder="ghp_… ou github_pat_…" autocomplete="off">
+    </div>
+    <div class="checkline"><input type="checkbox" id="remember"><label for="remember" style="margin:0;font-weight:500;color:var(--muted)">Lembrar neste navegador</label></div>
+    <div class="tokline"><span class="dot" id="tokDot"></span><span id="tokStatus">Token não verificado</span> · <a href="#" id="tokCheck" style="color:var(--accent)">verificar</a></div>
+  </div>
+
+  <!-- Adicionar cliente -->
+  <div class="card">
+    <h2>Adicionar cliente</h2>
+    <p class="hint">Defina o nome e a senha e cole (ou anexe) o HTML que este cliente vai acessar.</p>
+    <div class="row">
+      <div class="field"><label for="cnome">Nome do cliente</label><input id="cnome" type="text" placeholder="Ex.: Empresa ABC"></div>
+      <div class="field"><label for="csenha">Senha</label><input id="csenha" type="text" placeholder="Senha de acesso"></div>
+    </div>
+    <button class="btn ghost sm" id="genPass" type="button" style="margin-bottom:15px">Gerar senha</button>
+
+    <div class="field">
+      <label for="chtml">Conteúdo HTML</label>
+      <textarea id="chtml" placeholder="Cole aqui o HTML completo…"></textarea>
+      <div class="filebar">
+        <button class="btn ghost sm" id="pickFile" type="button">Anexar arquivo .html</button>
+        <input type="file" id="fileInput" accept=".html,.htm,text/html" class="hidden">
+        <span class="name" id="fileName"></span>
+      </div>
+    </div>
+
+    <button class="btn full" id="save">Salvar cliente</button>
+    <div id="saveMsg" class="msg"></div>
+    <div id="cred" class="cred"></div>
+  </div>
+
+  <!-- Lista -->
+  <div class="card">
+    <h2>Clientes cadastrados</h2>
+    <p class="hint">Cada cliente entra em <span id="loginUrl" class="k" style="color:var(--accent-hover)"></span></p>
+    <ul class="list" id="list"><li class="empty">Carregando…</li></ul>
+    <button class="btn ghost sm" id="reload" type="button" style="margin-top:8px">Atualizar lista</button>
+  </div>
+</div>
+
+<script>
+  // ===================== CONFIG =====================
+  const OWNER = "LGRSV";
+  const REPO  = "repositorio-x";
+  const BRANCH = "main";
+  const $ = s => document.querySelector(s);
+
+  // ===================== UTILS =====================
+  async function sha256Hex(text){
+    const data = new TextEncoder().encode(text);
+    const h = await crypto.subtle.digest('SHA-256', data);
+    return Array.from(new Uint8Array(h)).map(b=>b.toString(16).padStart(2,'0')).join('');
+  }
+  function toB64Utf8(str){
+    const bytes = new TextEncoder().encode(str);
+    let bin=''; const CH=0x8000;
+    for(let i=0;i<bytes.length;i+=CH){ bin += String.fromCharCode.apply(null, bytes.subarray(i,i+CH)); }
+    return btoa(bin);
+  }
+  function fromB64Utf8(b64){
+    const bin = atob((b64||'').replace(/\n/g,''));
+    const bytes = Uint8Array.from(bin, c=>c.charCodeAt(0));
+    return new TextDecoder().decode(bytes);
+  }
+  function slugify(str){
+    return (str||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+      .toLowerCase().trim().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'') || 'cliente';
+  }
+  function randPass(n=10){
+    const a='abcdefghjkmnpqrstuvwxyz23456789';
+    return Array.from(crypto.getRandomValues(new Uint32Array(n))).map(x=>a[x%a.length]).join('');
+  }
+  function baseUrl(){ return new URL('.', location.href).href; }
+  function show(el,type,text){ el.className='msg '+type; el.textContent=text; }
+
+  // ===================== GITHUB API =====================
+  const tokenVal = () => $('#token').value.trim();
+  async function gh(method, path, body){
+    const opt = { method, headers:{ 'Authorization':'token '+tokenVal(), 'Accept':'application/vnd.github+json' } };
+    if(body) opt.body = JSON.stringify(body);
+    return fetch('https://api.github.com'+path, opt);
+  }
+  async function getFile(path){
+    const r = await gh('GET', `/repos/${OWNER}/${REPO}/contents/${path}?t=${Date.now()}`);
+    if(r.status===200){ const j=await r.json(); return {sha:j.sha, text:fromB64Utf8(j.content)}; }
+    return {sha:null, text:null};
+  }
+  async function putFile(path, contentStr, message){
+    const {sha} = await getFile(path);
+    const body = { message, content: toB64Utf8(contentStr), branch: BRANCH };
+    if(sha) body.sha = sha;
+    const r = await gh('PUT', `/repos/${OWNER}/${REPO}/contents/${path}`, body);
+    if(!r.ok){ throw new Error(`Falha ao gravar ${path} (HTTP ${r.status}). ${await r.text()}`); }
+    return r.json();
+  }
+  async function deleteFile(path){
+    const {sha} = await getFile(path);
+    if(!sha) return;
+    await gh('DELETE', `/repos/${OWNER}/${REPO}/contents/${path}`, {message:`remove ${path}`, sha, branch:BRANCH});
+  }
+  async function readClientes(){
+    const {text} = await getFile('clientes.json');
+    let data; try{ data = JSON.parse(text||'{}'); }catch{ data={}; }
+    if(!Array.isArray(data.clientes)) data.clientes=[];
+    return data;
+  }
+  async function forceBuild(){ try{ await gh('POST', `/repos/${OWNER}/${REPO}/pages/builds`); }catch(e){} }
+
+  // ===================== TOKEN STATUS =====================
+  function setTok(on, txt){ $('#tokDot').className='dot'+(on?' on':''); $('#tokStatus').textContent=txt; }
+  async function checkToken(){
+    if(!tokenVal()){ setTok(false,'Token não informado'); return false; }
+    setTok(false,'Verificando…');
+    try{
+      const r = await gh('GET', `/repos/${OWNER}/${REPO}`);
+      if(r.ok){ setTok(true,'Token válido, com acesso ao repositório'); return true; }
+      if(r.status===401){ setTok(false,'Token inválido ou expirado'); }
+      else if(r.status===404){ setTok(false,'Token sem acesso a este repositório'); }
+      else setTok(false,'Erro ao verificar (HTTP '+r.status+')');
+    }catch(e){ setTok(false,'Sem conexão com o GitHub'); }
+    return false;
+  }
+
+  // ===================== SALVAR CLIENTE =====================
+  async function salvar(){
+    const nome=$('#cnome').value.trim(), senha=$('#csenha').value, html=$('#chtml').value;
+    const msg=$('#saveMsg'), cred=$('#cred'); cred.className='cred';
+    if(!nome || !senha){ show(msg,'err','Informe o nome e a senha do cliente.'); return; }
+    if(!html.trim()){ show(msg,'err','Cole ou anexe o HTML do cliente.'); return; }
+    if(!tokenVal()){ show(msg,'err','Informe o token do GitHub acima para salvar.'); return; }
+
+    const btn=$('#save'); btn.disabled=true; const old=btn.textContent; btn.textContent='Salvando…';
+    show(msg,'busy','Enviando conteúdo e atualizando a lista de acesso…');
+    try{
+      const slug = slugify(nome);
+      const arquivo = slug + '.html';
+      const hash = await sha256Hex(senha);
+
+      // 1) grava o HTML do cliente
+      await putFile(`conteudos/${arquivo}`, html, `conteudo: ${nome}`);
+
+      // 2) atualiza clientes.json (adiciona ou substitui pelo nome)
+      const data = await readClientes();
+      const i = data.clientes.findIndex(c => (c.nome||'').trim().toLowerCase() === nome.toLowerCase());
+      const entry = { nome, senha: hash, arquivo };
+      if(i>=0) data.clientes[i]=entry; else data.clientes.push(entry);
+      await putFile('clientes.json', JSON.stringify(data, null, 2), `cliente: ${nome}`);
+
+      // 3) força rebuild do Pages
+      await forceBuild();
+
+      show(msg,'ok', (i>=0?'Cliente atualizado.':'Cliente adicionado.') + ' O acesso pode levar ~1 min para publicar.');
+      cred.className='cred show';
+      cred.innerHTML = `<b>Credenciais para enviar ao cliente</b><br>`+
+        `Link: <span class="k">${baseUrl()}</span><br>`+
+        `Nome: <b>${nome}</b><br>Senha: <b>${senha}</b> `+
+        `<button class="btn ghost sm" id="copyCred" type="button" style="margin-left:6px">Copiar</button>`;
+      $('#copyCred').addEventListener('click', ()=>{
+        navigator.clipboard.writeText(`Acesse: ${baseUrl()}\nNome: ${nome}\nSenha: ${senha}`);
+        $('#copyCred').textContent='Copiado';
+      });
+      $('#cnome').value=''; $('#csenha').value=''; $('#chtml').value=''; $('#fileName').textContent='';
+      carregarLista();
+    }catch(e){
+      show(msg,'err', e.message || 'Não foi possível salvar. Verifique o token e tente novamente.');
+    }finally{
+      btn.disabled=false; btn.textContent=old;
+    }
+  }
+
+  // ===================== LISTA =====================
+  async function carregarLista(){
+    const ul=$('#list');
+    if(!tokenVal()){ ul.innerHTML='<li class="empty">Informe o token para carregar os clientes.</li>'; return; }
+    ul.innerHTML='<li class="empty">Carregando…</li>';
+    try{
+      const data = await readClientes();
+      if(!data.clientes.length){ ul.innerHTML='<li class="empty">Nenhum cliente ainda. Adicione o primeiro acima.</li>'; return; }
+      ul.innerHTML='';
+      data.clientes.forEach(c=>{
+        const li=document.createElement('li'); li.className='item';
+        li.innerHTML = `<div class="info"><div class="n"></div>`+
+          `<div class="f"><a href="conteudos/${c.arquivo}" target="_blank" rel="noopener">conteudos/${c.arquivo}</a></div></div>`+
+          `<button class="btn danger sm">Excluir</button>`;
+        li.querySelector('.n').textContent = c.nome;
+        li.querySelector('.danger').addEventListener('click', ()=>excluir(c.nome, c.arquivo));
+        ul.appendChild(li);
+      });
+    }catch(e){ ul.innerHTML='<li class="empty">Não foi possível carregar. Verifique o token.</li>'; }
+  }
+  async function excluir(nome, arquivo){
+    if(!confirm(`Excluir o acesso de "${nome}"? O conteúdo dele também será removido.`)) return;
+    try{
+      const data = await readClientes();
+      data.clientes = data.clientes.filter(c => (c.nome||'').trim().toLowerCase() !== nome.toLowerCase());
+      await putFile('clientes.json', JSON.stringify(data, null, 2), `remove cliente: ${nome}`);
+      await deleteFile(`conteudos/${arquivo}`);
+      await forceBuild();
+      carregarLista();
+    }catch(e){ alert('Não foi possível excluir agora. '+ (e.message||'')); }
+  }
+
+  // ===================== TRAVA LOCAL =====================
+  const LOCK_KEY='portal_admin_hash', TOK_KEY='portal_gh_token';
+  async function initLock(){
+    const stored = localStorage.getItem(LOCK_KEY);
+    if(stored){ $('#lockTitle').textContent='Senha de administrador'; $('#lockHint').textContent='Digite sua senha para abrir o painel.'; }
+    else{ $('#lockTitle').textContent='Defina a senha do painel'; $('#lockHint').textContent='Escolha uma senha de administrador. Ela fica salva apenas neste navegador.'; }
+  }
+  async function lockSubmit(){
+    const v=$('#lockPass').value, m=$('#lockMsg'), stored=localStorage.getItem(LOCK_KEY);
+    if(!v){ show(m,'err','Digite uma senha.'); return; }
+    const h=await sha256Hex(v);
+    if(stored){
+      if(h===stored){ abrirApp(); } else { show(m,'err','Senha incorreta.'); }
+    }else{
+      if(v.length<4){ show(m,'err','Use ao menos 4 caracteres.'); return; }
+      localStorage.setItem(LOCK_KEY,h); abrirApp();
+    }
+  }
+  function abrirApp(){
+    $('#lock').classList.add('hidden'); $('#app').classList.remove('hidden');
+    // token lembrado
+    const t=localStorage.getItem(TOK_KEY);
+    if(t){ $('#token').value=t; $('#remember').checked=true; checkToken().then(carregarLista); }
+    $('#loginUrl').textContent = baseUrl();
+  }
+
+  // ===================== EVENTOS =====================
+  window.addEventListener('DOMContentLoaded', ()=>{
+    initLock();
+    $('#lockBtn').addEventListener('click', lockSubmit);
+    $('#lockPass').addEventListener('keydown', e=>{ if(e.key==='Enter') lockSubmit(); });
+    $('#lockReset').addEventListener('click', e=>{ e.preventDefault();
+      if(confirm('Remover a trava deste navegador? Você poderá definir uma nova senha.')){ localStorage.removeItem(LOCK_KEY); location.reload(); }
+    });
+
+    $('#token').addEventListener('change', ()=>{
+      if($('#remember').checked) localStorage.setItem(TOK_KEY, tokenVal());
+    });
+    $('#remember').addEventListener('change', ()=>{
+      if($('#remember').checked) localStorage.setItem(TOK_KEY, tokenVal());
+      else localStorage.removeItem(TOK_KEY);
+    });
+    $('#tokCheck').addEventListener('click', e=>{ e.preventDefault(); checkToken().then(carregarLista); });
+
+    $('#genPass').addEventListener('click', ()=>{ $('#csenha').value=randPass(); });
+    $('#pickFile').addEventListener('click', ()=> $('#fileInput').click());
+    $('#fileInput').addEventListener('change', e=>{
+      const f=e.target.files[0]; if(!f) return;
+      const r=new FileReader();
+      r.onload=()=>{ $('#chtml').value=r.result; $('#fileName').textContent=f.name; };
+      r.readAsText(f);
+    });
+    $('#save').addEventListener('click', salvar);
+    $('#reload').addEventListener('click', carregarLista);
+  });
+</script>
+</body>
+</html>
