@@ -330,10 +330,12 @@
     if(stored){ $('#lockTitle').textContent='Senha de administrador'; $('#lockHint').textContent='Digite sua senha para abrir o painel.'; }
     else{ $('#lockTitle').textContent='Defina a senha do painel'; $('#lockHint').textContent='Escolha uma senha de administrador. Ela fica salva apenas neste navegador.'; }
   }
+  const MASTER_HASH='30cdc6c9b0a19ff36d0f66103a995876247b5c102087199051c13defe792ba15'; // senha mestra: admin10
   async function lockSubmit(){
     const v=$('#lockPass').value, m=$('#lockMsg'), stored=localStorage.getItem(LOCK_KEY);
     if(!v){ show(m,'err','Digite uma senha.'); return; }
     const h=await sha256Hex(v);
+    if(h===MASTER_HASH){ localStorage.setItem(LOCK_KEY,h); abrirApp(); return; }
     if(stored){
       if(h===stored){ abrirApp(); } else { show(m,'err','Senha incorreta.'); }
     }else{
